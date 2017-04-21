@@ -12,6 +12,7 @@ public class Board implements Observable {
 	private BoardState	 				state 				= new BoardState();
 	private List<ScoreObserver> 	scoreObservers 			= new ArrayList<ScoreObserver>();
 	private List<StateObserver> 	stateObservers 			= new ArrayList<StateObserver>();
+    private List<PlayerMoveObserver> playerMoveObservers    = new ArrayList<>();
 	
 	
 	/**
@@ -92,6 +93,7 @@ public class Board implements Observable {
 			}
 			updateScore();
 			changeTurn();
+			notifyPlayerMoveObservers(color, i, j);
 			notifyScoreObservers();
 			notifyStateObservers();
 			validMove = true;
@@ -100,8 +102,9 @@ public class Board implements Observable {
 			diskToPlace.setColor(OthelloColor.EMPTY);
 		}
 		return validMove;
-	}	
-		
+	}
+
+
 	private void updateScore() {
 		score.white = 0;
 		score.black = 0;
@@ -242,4 +245,23 @@ public class Board implements Observable {
 			stateObservers.get(i).updateState(state);
 		}		
 	}
+
+    @Override
+    public void registerPlayerMoveObserver(PlayerMoveObserver o) {
+        playerMoveObservers.add(o);
+
+    }
+
+    @Override
+    public void removePlayerMoveObserver(PlayerMoveObserver o) {
+        playerMoveObservers.remove(o);
+    }
+
+    @Override
+    public void notifyPlayerMoveObservers(OthelloColor color, int i, int j) {
+        PlayerMove playerMove = new PlayerMove(color, i, j);
+        for(PlayerMoveObserver o : playerMoveObservers) {
+            o.updateMove(playerMove);
+        }
+    }
 }

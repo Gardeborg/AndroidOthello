@@ -7,4 +7,8 @@ public interface Observable {
 	public void registerStateObserver(StateObserver o);
 	public void removeStateObserver(StateObserver o);
 	public void notifyStateObservers();
+
+	public void registerPlayerMoveObserver(PlayerMoveObserver o);
+	public void removePlayerMoveObserver(PlayerMoveObserver o);
+	public void notifyPlayerMoveObservers(OthelloColor c, int i, int j);
 }

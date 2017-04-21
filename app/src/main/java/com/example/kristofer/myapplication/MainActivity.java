@@ -1,26 +1,23 @@
 package com.example.kristofer.myapplication;
 
-import android.database.DataSetObserver;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.AnimatedStateListDrawable;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
-import android.view.View;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.GridLayout;
-
+import android.widget.TableLayout;
+import android.widget.TableRow;
 
 import com.example.kristofer.myapplication.core.Board;
 import com.example.kristofer.myapplication.core.BoardState;
 import com.example.kristofer.myapplication.core.OthelloActionListener;
 import com.example.kristofer.myapplication.core.OthelloColor;
 import com.example.kristofer.myapplication.core.StateObserver;
+import com.example.kristofer.myapplication.net.Network;
+
 
 public class MainActivity extends AppCompatActivity implements StateObserver {
 
@@ -29,24 +26,41 @@ public class MainActivity extends AppCompatActivity implements StateObserver {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.gridlayout);
-
-        GridLayout grid = (GridLayout) findViewById(R.id.boardLayout);
 
         Board board = new Board();
         board.initialize();
 
+        super.onCreate(savedInstanceState);
+//        setContentView(R.layout.gridlayout);
+//
+//        GridLayout grid = (GridLayout) findViewById(R.id.boardLayout);
+//
+//        for(int i = 0; i < Board.BOARD_SIZE; ++i) {
+//            for (int j = 0; j < Board.BOARD_SIZE; ++j) {
+//                buttons[i][j] = new Button(this);
+//                buttons[i][j].setOnClickListener(new OthelloActionListener(board, i, j));
+//                grid.addView(buttons[i][j]);
+//            }
+//        }
+
+        setContentView(R.layout.main_table);
+        TableLayout grid = (TableLayout) findViewById(R.id.boardLayout);
+        grid.setShrinkAllColumns(true);
+        grid.setStretchAllColumns(true);
+
         for(int i = 0; i < Board.BOARD_SIZE; ++i) {
+            TableRow row = new TableRow(this);
+            grid.addView(row);
             for (int j = 0; j < Board.BOARD_SIZE; ++j) {
                 buttons[i][j] = new Button(this);
                 buttons[i][j].setOnClickListener(new OthelloActionListener(board, i, j));
-                grid.addView(buttons[i][j]);
-                buttons[i][j].setPadding(0,0,0,0);
+                row.addView(buttons[i][j]);
             }
         }
 
         board.registerStateObserver(this);
+        Network network = new Network();
+        board.registerPlayerMoveObserver(network);
     }
 
     @Override
